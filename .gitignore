@@ -1,0 +1,10 @@
+# ignore IDE generated files
+.idea
+
+# ignore python cache
+__pycache__
+*/__pycache__
+
+
+# ignore tmp dir
+data
