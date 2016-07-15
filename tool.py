@@ -3,7 +3,7 @@ __author__ = 'fucus'
 import skimage.io
 from skimage.io import imread
 from skimage.io import imsave
-from skimage.transform import resize
+from scipy.misc import imresize
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -140,6 +140,45 @@ def extract_human(img):
     img = shift_down(img, down_blank)
     return img
 
+def center_person(img, size):
+    """
+
+    :param img: grey image, numpy.array datatype
+    :param size: tuple, for example(120, 160), first number for height, second for width
+    :return:
+    """
+
+    highest_index = 0
+    highest = 0
+    origin_height, origin_width = img.shape
+
+    for i in range(origin_width):
+        data = img[:, i]
+        for j, val in enumerate(data):
+
+            # encounter body
+            if val > 0:
+                now_height = origin_height - j
+                if now_height > highest:
+                    highest = now_height
+                    highest_index = i
+                break
+
+    left_part_column_count = highest_index
+    right_part_column_count = origin_width - left_part_column_count - 1
+
+    if left_part_column_count == right_part_column_count:
+        return imresize(img, size)
+    elif left_part_column_count > right_part_column_count:
+        right_padding_column_count = left_part_column_count - right_part_column_count
+        new_img = np.zeros((origin_height, origin_width + right_padding_column_count), dtype=np.int)
+        new_img[:, :origin_width] = img
+    else:
+        left_padding_column_count = right_part_column_count - left_part_column_count
+        new_img = np.zeros((origin_height, origin_width + left_padding_column_count), dtype=np.int)
+        new_img[:, left_padding_column_count:] = img
+
+    return imresize(new_img, size)
 
 def build_GEI(img_list):
     """
@@ -153,7 +192,7 @@ def build_GEI(img_list):
     human_extract_list = []
     for img in img_list:
         try:
-            human_extract_list.append(resize(extract_human(img), (norm_height, norm_width)))
+            human_extract_list.append(center_person(extract_human(img), (norm_height, norm_width)))
         except:
             logger.warning("fail to extract human from image")
     try:
@@ -161,7 +200,7 @@ def build_GEI(img_list):
     except:
         logger.warning("fail to calculate GEI, return an empty image")
 
-    return result
+    return result.astype(np.int)
 
 def img_path_to_GEI(img_path):
     """
@@ -177,8 +216,13 @@ def img_path_to_GEI(img_path):
 if __name__ == '__main__':
     import config
     img = imread(config.project.casia_test_img, as_grey=True)
-    human_extract = extract_human(img)
+
+    extract_human_img = extract_human(img)
+    human_extract_center = center_person(extract_human_img, (210, 70))
+
     imsave("%s/origin_img.bmp" % config.project.test_data_path, img)
-    imsave("%s/extract_human.bmp" % config.project.test_data_path, human_extract)
+    imsave("%s/extract_human.bmp" % config.project.test_data_path, extract_human_img)
+
+    imsave("%s/extract_human_center.bmp" % config.project.test_data_path, human_extract_center)
     GEI_image = img_path_to_GEI(config.project.casia_test_img_dir)
     imsave("%s/GEI.bmp" % config.project.test_data_path, GEI_image)
