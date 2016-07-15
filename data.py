@@ -10,8 +10,8 @@ logger = logging.getLogger("data")
 
 def load_training_validation_data():
     human_id = ["%03d" % i for i in range(1, 125)]
-    training_dir = ["nm-%02d" % i for i in range(1, 6)]
-    validation_dir = ["nm-06"]
+    training_dir = ["nm-%02d" % i for i in range(1, 5)]
+    validation_dir = ["nm-05", "nm-06"]
     view = "090"
     # remove broken data
     broken_data_list = ["034", "046", "067", "064", "068"]
