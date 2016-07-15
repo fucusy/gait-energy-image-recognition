@@ -20,7 +20,7 @@ class RandomForestClassification(Model):
 
         """
             Best parameters found by grid search:
-            {'max_features': 100, 'max_depth': 100, 'n_estimators': 300}
+            {'n_estimators': 500, 'max_depth': 100, 'max_features': 100}
         """
 
         self.model = self.grid_search_fit_(self.model, param_grid, x_train, y_train)
