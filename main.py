@@ -34,6 +34,7 @@ if __name__ == '__main__':
             correct_count = sum(predict_y == validation_y)
             correct_percent = correct_count * 1.0 / len(predict_y)
             correct_tbl["%s-%s" % (train_view, val_view)] = correct_percent
-            logger.info("final precision %d/%d %.3f" % (correct_count, len(predict_y), correct_percent))
+
+            logger.info("train by %s, val by %s, precision %d/%d %.3f" % (train_view, val_view, correct_count, len(predict_y), correct_percent))
 
     data_tool.output_result(view_list, correct_tbl)
