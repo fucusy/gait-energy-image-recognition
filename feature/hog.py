@@ -11,8 +11,9 @@ from config import project
 
 
 def get_1d_2d_hog(img):
-    gray_img = color.rgb2gray(img)
-    hog_image_1d, hog_image_2d = hog(gray_img, orientations=8, pixels_per_cell=(16, 16),
+    if len(img.shape) >= 3 and img.shape[2] == 3:
+        img = color.rgb2gray(img)
+    hog_image_1d, hog_image_2d = hog(img, orientations=8, pixels_per_cell=(16, 16),
                     cells_per_block=(1, 1), visualise=True)
     return hog_image_1d, hog_image_2d
 
