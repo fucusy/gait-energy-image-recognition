@@ -46,15 +46,14 @@ def load_training_validation_data(train_view=None, val_view=None, train_dir=None
                 logger.warning("%s do not exist" % img_dir)
 
     for id in human_id:
+        logger.info("processing human %s" % id)
         for dir in train_dir:
             training_y.append(id)
             img_dir = "%s/%s/%s/%s" % (config.project.casia_dataset_b_path, id, dir, train_view)
-            logger.info("processing dir %s" % img_dir)
             training_x.append(img_path_to_GEI(img_dir))
         for dir in val_dir:
             validation_y.append(id)
             img_dir = "%s/%s/%s/%s" % (config.project.casia_dataset_b_path, id, dir, val_view)
-            logger.info("processing dir %s" % img_dir)
             validation_x.append(img_path_to_GEI(img_dir))
     return training_x, training_y, validation_x, validation_y
 
