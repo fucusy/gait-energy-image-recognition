@@ -208,9 +208,15 @@ def img_path_to_GEI(img_path):
     :param img_path: string
     :return: a GEI image
     """
+
+    id = img_path.replace("/", "_")
+    cache_file = "%s/%s_GEI.np" % (config.project.test_data_path, id)
+    if os.path.exists(cache_file) and os.path.isfile(cache_file):
+        return np.load(cache_file)
     img_list = load_image_path_list(img_path)
     img_data_list = image_path_list_to_image_pic_list(img_list)
     GEI_image = build_GEI(img_data_list)
+    np.save(cache_file, GEI_image)
     return GEI_image
 
 if __name__ == '__main__':
