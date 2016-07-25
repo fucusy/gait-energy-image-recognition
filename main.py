@@ -1,155 +1,39 @@
 __author__ = 'fucus'
 import logging
-from data import load_training_validation_data
+from data_tool import load_training_validation_data
 from model.models import RandomForestClassification
-logger = logging.getLogger("main")
 from feature.hog import get_hog
+import data_tool
 from sklearn.metrics import classification_report
 
+logger = logging.getLogger("main")
 if __name__ == '__main__':
     level = logging.INFO
     FORMAT = '%(asctime)-12s[%(levelname)s] %(message)s'
     logging.basicConfig(level=level, format=FORMAT, datefmt='%Y-%m-%d %H:%M:%S')
-    training_x, training_y, validation_x, validation_y = load_training_validation_data()
 
-    training_feature_x = [get_hog(x) for x in training_x]
-    validation_feature_x = [get_hog(x) for x in validation_x]
+    view_list = ["%03d" % x for x in range(0, 181, 18)]
+    train_dir = ["nm-%02d" % i for i in range(1, 5)]
+    val_dir = ["nm-05", "nm-06"]
 
-    model = RandomForestClassification()
-    model.fit(x_train=training_feature_x, y_train=training_y)
+    # "{train_view}-{val_view}" as key, "090-072" means 090 as train data, 072 as validation data
+    correct_tbl = {}
 
-    predict_y = model.predict(validation_feature_x)
-    report = classification_report(predict_y, validation_y)
-    logger.info("the validation report:\n %s" % report)
+    for train_view in view_list:
+        for val_view in view_list:
+            training_x, training_y, validation_x, validation_y = load_training_validation_data(train_view=train_view
+                                                                                               , val_view=val_view
+                                                                                               , train_dir=train_dir
+                                                                                               , val_dir=val_dir)
+            training_feature_x = [get_hog(x) for x in training_x]
+            validation_feature_x = [get_hog(x) for x in validation_x]
 
-    correct = sum(predict_y == validation_y)
-    logger.info("final precision %d/%d %.3f" % (correct, len(predict_y), correct * 1.0 / len(predict_y)))
+            model = RandomForestClassification()
+            model.fit(x_train=training_feature_x, y_train=training_y)
+            predict_y = model.predict(validation_feature_x)
+            correct_count = sum(predict_y == validation_y)
+            correct_percent = correct_count * 1.0 / len(predict_y)
+            correct_tbl["%s-%s" % (train_view, val_view)] = correct_percent
+            logger.info("final precision %d/%d %.3f" % (correct_count, len(predict_y), correct_percent))
 
-
-    """
-    last running result
-    2016-06-24 15:54:25[INFO] the validation report:
-              precision    recall  f1-score   support
-
-        001       1.00      1.00      1.00         2
-        002       1.00      0.67      0.80         3
-        003       1.00      1.00      1.00         2
-        004       1.00      1.00      1.00         2
-        005       1.00      1.00      1.00         2
-        006       1.00      1.00      1.00         2
-        007       1.00      1.00      1.00         2
-        008       1.00      1.00      1.00         2
-        009       1.00      1.00      1.00         2
-        010       1.00      1.00      1.00         2
-        011       1.00      1.00      1.00         2
-        012       1.00      1.00      1.00         2
-        013       1.00      1.00      1.00         2
-        014       0.50      1.00      0.67         1
-        015       1.00      1.00      1.00         2
-        016       1.00      1.00      1.00         2
-        017       1.00      1.00      1.00         2
-        018       1.00      1.00      1.00         2
-        019       1.00      1.00      1.00         2
-        020       1.00      1.00      1.00         2
-        021       1.00      1.00      1.00         2
-        022       1.00      1.00      1.00         2
-        023       1.00      1.00      1.00         2
-        024       1.00      1.00      1.00         2
-        025       1.00      1.00      1.00         2
-        026       0.50      1.00      0.67         1
-        027       1.00      1.00      1.00         2
-        028       1.00      1.00      1.00         2
-        029       1.00      1.00      1.00         2
-        030       1.00      1.00      1.00         2
-        031       1.00      1.00      1.00         2
-        032       1.00      1.00      1.00         2
-        033       1.00      1.00      1.00         2
-        035       1.00      1.00      1.00         2
-        036       1.00      1.00      1.00         2
-        037       1.00      1.00      1.00         2
-        038       1.00      1.00      1.00         2
-        039       1.00      0.40      0.57         5
-        040       1.00      1.00      1.00         2
-        041       1.00      1.00      1.00         2
-        042       1.00      1.00      1.00         2
-        043       1.00      1.00      1.00         2
-        044       1.00      1.00      1.00         2
-        045       0.50      1.00      0.67         1
-        047       1.00      1.00      1.00         2
-        048       1.00      1.00      1.00         2
-        049       1.00      0.67      0.80         3
-        050       1.00      1.00      1.00         2
-        051       0.50      1.00      0.67         1
-        052       1.00      0.67      0.80         3
-        053       1.00      1.00      1.00         2
-        054       1.00      1.00      1.00         2
-        055       1.00      1.00      1.00         2
-        056       0.50      1.00      0.67         1
-        057       1.00      1.00      1.00         2
-        058       1.00      1.00      1.00         2
-        059       1.00      1.00      1.00         2
-        060       1.00      1.00      1.00         2
-        061       0.50      1.00      0.67         1
-        062       1.00      1.00      1.00         2
-        063       1.00      1.00      1.00         2
-        065       1.00      1.00      1.00         2
-        066       1.00      1.00      1.00         2
-        069       1.00      1.00      1.00         2
-        070       1.00      1.00      1.00         2
-        071       1.00      1.00      1.00         2
-        072       1.00      1.00      1.00         2
-        073       1.00      1.00      1.00         2
-        074       1.00      1.00      1.00         2
-        075       1.00      1.00      1.00         2
-        076       1.00      1.00      1.00         2
-        077       1.00      1.00      1.00         2
-        078       1.00      1.00      1.00         2
-        079       1.00      1.00      1.00         2
-        080       1.00      1.00      1.00         2
-        081       1.00      1.00      1.00         2
-        082       1.00      1.00      1.00         2
-        083       1.00      1.00      1.00         2
-        084       0.50      0.33      0.40         3
-        085       1.00      1.00      1.00         2
-        086       0.50      1.00      0.67         1
-        087       1.00      0.67      0.80         3
-        088       1.00      1.00      1.00         2
-        089       1.00      1.00      1.00         2
-        090       1.00      1.00      1.00         2
-        091       1.00      1.00      1.00         2
-        092       1.00      0.67      0.80         3
-        093       0.50      1.00      0.67         1
-        094       0.50      1.00      0.67         1
-        095       0.50      1.00      0.67         1
-        096       1.00      1.00      1.00         2
-        097       1.00      1.00      1.00         2
-        098       1.00      1.00      1.00         2
-        099       1.00      0.67      0.80         3
-        100       1.00      1.00      1.00         2
-        101       1.00      1.00      1.00         2
-        102       1.00      1.00      1.00         2
-        103       1.00      1.00      1.00         2
-        104       1.00      1.00      1.00         2
-        105       1.00      0.67      0.80         3
-        106       1.00      1.00      1.00         2
-        107       1.00      1.00      1.00         2
-        108       1.00      1.00      1.00         2
-        109       1.00      1.00      1.00         2
-        110       1.00      1.00      1.00         2
-        111       1.00      0.67      0.80         3
-        112       1.00      1.00      1.00         2
-        113       0.50      1.00      0.67         1
-        114       1.00      1.00      1.00         2
-        115       1.00      1.00      1.00         2
-        116       1.00      1.00      1.00         2
-        117       1.00      1.00      1.00         2
-        118       1.00      1.00      1.00         2
-        119       1.00      1.00      1.00         2
-        120       0.50      1.00      0.67         1
-        121       1.00      1.00      1.00         2
-        122       1.00      1.00      1.00         2
-        123       1.00      1.00      1.00         2
-        124       1.00      1.00      1.00         2
-
-avg / total       0.97      0.95      0.95       238
-    """
+    data_tool.output_result(view_list, correct_tbl)

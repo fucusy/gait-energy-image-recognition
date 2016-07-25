@@ -15,8 +15,11 @@ class RandomForestClassification(Model):
         Model.__init__(self)
         self.model = RandomForestClassifier(n_estimators=500, n_jobs=-1, random_state=2016, verbose=1, max_depth=1000, max_features=400)
 
-    def fit(self, x_train, y_train, x_test=None):
-        param_grid = {'n_estimators': [200, 300, 500], 'max_depth': [100, 200, 400, 500], 'max_features': [100, 200, 400]}
+    def fit(self, x_train, y_train, x_test=None, param_grid=None):
+        # param_grid = {'n_estimators': [200, 300, 500], 'max_depth': [100, 200, 400, 500], 'max_features': [100, 200, 400]}
+
+        if param_grid is None:
+            param_grid = {'n_estimators': [200], 'max_depth': [100], 'max_features': [100]}
 
         """
             Best parameters found by grid search:
