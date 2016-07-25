@@ -1,6 +1,8 @@
 __author__ = 'fucus'
 
 import skimage.io
+
+import config
 from skimage.io import imread
 from skimage.io import imsave
 from scipy.misc import imresize
@@ -210,7 +212,7 @@ def img_path_to_GEI(img_path):
     """
 
     id = img_path.replace("/", "_")
-    cache_file = "%s/%s_GEI.np" % (config.project.test_data_path, id)
+    cache_file = "%s/%s_GEI.npy" % (config.project.test_data_path, id)
     if os.path.exists(cache_file) and os.path.isfile(cache_file):
         return np.load(cache_file)
     img_list = load_image_path_list(img_path)
