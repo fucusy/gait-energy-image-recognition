@@ -24,10 +24,6 @@ def load_training_validation_data(train_view=None, val_view=None, train_dir=None
         val_view = "090"
 
 
-    # remove broken data
-    broken_data_list = ["034", "046", "067", "064", "068"]
-    for data in broken_data_list:
-        human_id.remove(data)
 
     training_x = []
     training_y = []
@@ -48,13 +44,24 @@ def load_training_validation_data(train_view=None, val_view=None, train_dir=None
     for id in human_id:
         logger.info("processing human %s" % id)
         for dir in train_dir:
-            training_y.append(id)
             img_dir = "%s/%s/%s/%s" % (config.project.casia_dataset_b_path, id, dir, train_view)
-            training_x.append(img_path_to_GEI(img_dir))
+            data = img_path_to_GEI(img_dir)
+
+            if len(data.shape) > 0:
+                training_x.append(data)
+                training_y.append(id)
+            else:
+                logger.warning("fail to extract %s of %s" % (img_dir, id))
+
         for dir in val_dir:
-            validation_y.append(id)
             img_dir = "%s/%s/%s/%s" % (config.project.casia_dataset_b_path, id, dir, val_view)
-            validation_x.append(img_path_to_GEI(img_dir))
+            data = img_path_to_GEI(img_dir)
+            if len(data.shape) > 0:
+                validation_x.append(data)
+                validation_y.append(id)
+            else:
+                logger.warning("fail to extract %s of %s" % (img_dir, id))
+
     return training_x, training_y, validation_x, validation_y
 
 
