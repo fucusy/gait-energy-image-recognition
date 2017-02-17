@@ -72,7 +72,12 @@ def output_result(view_list, correct_tbl):
     for val_view in view_list:
         output = "%s\t" % val_view
         for train_view in view_list:
-            output += "%.2f\t" % correct_tbl["%s-%s" % (train_view, val_view)]
+            key = "%s-%s" % (train_view, val_view)
+            if key in correct_tbl:
+                precision = correct_tbl[key]
+            else:
+                precision = 0.0
+            output += "%.2f\t" % precision
         logger.info(output)
 
 if __name__ == '__main__':
