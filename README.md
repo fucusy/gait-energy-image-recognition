@@ -4,6 +4,8 @@
 language version: python 3.5
 os system: Linux or Unix, test on OS X 10.11.5
 
+## python library dependency
+* scikit-learn==0.17.1
 
 ## algorithm pipeline
 
