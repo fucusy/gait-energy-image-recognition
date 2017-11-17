@@ -1,50 +1,42 @@
-__author__ = 'fucus'
-
 import config
 from tool import img_path_to_GEI
-from skimage.io import imsave
 import logging
 import os
 logger = logging.getLogger("data")
 
+
 def load_training_validation_data(train_view=None, val_view=None, train_dir=None, val_dir=None):
-
-
     human_id = ["%03d" % i for i in range(1, 125)]
-
     if train_dir is None:
         train_dir = ["nm-%02d" % i for i in range(1, 5)]
     if val_dir is None:
         val_dir = ["nm-05", "nm-06"]
-
     if train_view is None:
         train_view = "090"
-
     if val_view is None:
         val_view = "090"
-
-
 
     training_x = []
     training_y = []
 
     validation_x = []
     validation_y = []
+
     # check dir exists
     for id in human_id:
         for dir in train_dir:
-            img_dir = "%s/%s/%s/%s" % (config.project.casia_dataset_b_path, id, dir, train_view)
+            img_dir = "%s/%s/%s/%s" % (config.Project.casia_dataset_b_path, id, dir, train_view)
             if not os.path.exists(img_dir):
                 logger.warning("%s do not exist" % img_dir)
         for dir in val_dir:
-            img_dir = "%s/%s/%s/%s" % (config.project.casia_dataset_b_path, id, dir, val_view)
+            img_dir = "%s/%s/%s/%s" % (config.Project.casia_dataset_b_path, id, dir, val_view)
             if not os.path.exists(img_dir):
                 logger.warning("%s do not exist" % img_dir)
 
     for id in human_id:
         logger.info("processing human %s" % id)
         for dir in train_dir:
-            img_dir = "%s/%s/%s/%s" % (config.project.casia_dataset_b_path, id, dir, train_view)
+            img_dir = "%s/%s/%s/%s" % (config.Project.casia_dataset_b_path, id, dir, train_view)
             data = img_path_to_GEI(img_dir)
 
             if len(data.shape) > 0:
@@ -54,7 +46,7 @@ def load_training_validation_data(train_view=None, val_view=None, train_dir=None
                 logger.warning("fail to extract %s of %s" % (img_dir, id))
 
         for dir in val_dir:
-            img_dir = "%s/%s/%s/%s" % (config.project.casia_dataset_b_path, id, dir, val_view)
+            img_dir = "%s/%s/%s/%s" % (config.Project.casia_dataset_b_path, id, dir, val_view)
             data = img_path_to_GEI(img_dir)
             if len(data.shape) > 0:
                 validation_x.append(data)
@@ -66,7 +58,6 @@ def load_training_validation_data(train_view=None, val_view=None, train_dir=None
 
 
 def output_result(view_list, correct_tbl):
-
     logger.info("every row means the validation result from different training views")
     logger.info("\t\t" + "\t\t".join(view_list))
     for val_view in view_list:

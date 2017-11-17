@@ -2,25 +2,24 @@ __author__ = 'fucus'
 import logging
 from data_tool import load_training_validation_data
 from model.models import RandomForestClassification
-from feature.hog import get_hog
+from feature.hog import flatten
 import data_tool
-from sklearn.metrics import classification_report
 
 logger = logging.getLogger("main")
-import logging
+
 level = logging.INFO
 log_filename = '%s.log' % __file__
 format = '%(asctime)-12s[%(levelname)s] %(message)s'
-datefmt='%Y-%m-%d %H:%M:%S'
+datefmt ='%Y-%m-%d %H:%M:%S'
 logging.basicConfig(level=level,
-            format=format,
-            filename=log_filename,
-            datefmt= datefmt)
+                    format=format,
+                    filename=log_filename,
+                    datefmt=datefmt)
 
 if __name__ == '__main__':
     view_list = ["%03d" % x for x in range(0, 181, 18)]
     train_dir = ["nm-%02d" % i for i in range(1, 5)]
-    val_dir = ["bg-01", "bg-02"]
+    val_dir = ["cl-01", "cl-02"]
 
     # "{train_view}-{val_view}" as key, "090-072" means 090 as train data, 072 as validation data
     correct_tbl = {}
@@ -31,8 +30,8 @@ if __name__ == '__main__':
                                                                                            , val_view=val_view
                                                                                            , train_dir=train_dir
                                                                                            , val_dir=val_dir)
-        training_feature_x = [get_hog(x) for x in training_x]
-        validation_feature_x = [get_hog(x) for x in validation_x]
+        training_feature_x = [flatten(x) for x in training_x]
+        validation_feature_x = [flatten(x) for x in validation_x]
 
         model = RandomForestClassification()
         model.fit(x_train=training_feature_x, y_train=training_y)

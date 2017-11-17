@@ -1,12 +1,6 @@
-__author__ = 'fucus'
-
-import skimage.io
-
-import config
 from skimage.io import imread
 from skimage.io import imsave
 from scipy.misc import imresize
-import matplotlib.pyplot as plt
 import numpy as np
 import os
 import logging
@@ -74,6 +68,7 @@ def shift_up(img, up=10.0, is_grey=True):
 
     return img_shift_up
 
+
 def shift_down(img, down=10.0):
     return shift_up(img, -down)
 
@@ -88,13 +83,13 @@ def load_image_path_list(path):
     return result
 
 
-
 def image_path_list_to_image_pic_list(image_path_list):
     image_pic_list = []
     for image_path in image_path_list:
         im = imread(image_path)
         image_pic_list.append(im)
     return image_pic_list
+
 
 def extract_human(img):
     """
@@ -142,6 +137,7 @@ def extract_human(img):
     img = shift_down(img, down_blank)
     return img
 
+
 def center_person(img, size, method="simple"):
     """
     :param img: grey image, numpy.array datatype
@@ -152,8 +148,6 @@ def center_person(img, size, method="simple"):
 
     best_index = 0
     origin_height, origin_width = img.shape
-
-
     if method == "simple":
         highest = 0
         for i in range(origin_width):
@@ -221,6 +215,7 @@ def build_GEI(img_list):
 
     return result.astype(np.int)
 
+
 def img_path_to_GEI(img_path):
     """
     convert the images in the img_path to GEI
@@ -229,7 +224,7 @@ def img_path_to_GEI(img_path):
     """
 
     id = img_path.replace("/", "_")
-    cache_file = "%s/%s_GEI.npy" % (config.project.test_data_path, id)
+    cache_file = "%s/%s_GEI.npy" % (config.Project.test_data_path, id)
     if os.path.exists(cache_file) and os.path.isfile(cache_file):
         return np.load(cache_file)
     img_list = load_image_path_list(img_path)
@@ -238,16 +233,17 @@ def img_path_to_GEI(img_path):
     np.save(cache_file, GEI_image)
     return GEI_image
 
+
 if __name__ == '__main__':
     import config
-    img = imread(config.project.casia_test_img, as_grey=True)
+    img = imread(config.Project.casia_test_img, as_grey=True)
 
     extract_human_img = extract_human(img)
     human_extract_center = center_person(extract_human_img, (210, 70))
 
-    imsave("%s/origin_img.bmp" % config.project.test_data_path, img)
-    imsave("%s/extract_human.bmp" % config.project.test_data_path, extract_human_img)
+    imsave("%s/origin_img.bmp" % config.Project.test_data_path, img)
+    imsave("%s/extract_human.bmp" % config.Project.test_data_path, extract_human_img)
 
-    imsave("%s/extract_human_center.bmp" % config.project.test_data_path, human_extract_center)
-    GEI_image = img_path_to_GEI(config.project.casia_test_img_dir)
-    imsave("%s/GEI.bmp" % config.project.test_data_path, GEI_image)
+    imsave("%s/extract_human_center.bmp" % config.Project.test_data_path, human_extract_center)
+    GEI_image = img_path_to_GEI(config.Project.casia_test_img_dir)
+    imsave("%s/GEI.bmp" % config.Project.test_data_path, GEI_image)

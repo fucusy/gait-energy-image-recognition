@@ -15,8 +15,9 @@ Problem_Data Sets, Performance, and Analysis*`
 
 ## how to run
 
-1. update the config.py file variable setting
+1. update the config.py file variable setting, `casia_dataset_b_path`
 2. run the main.py script
+3. take a look at log file, main.py.log, run `tail -f main.py.log`
 
 
 

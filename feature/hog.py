@@ -7,14 +7,14 @@ from skimage import color, exposure
 from skimage.feature import hog
 import matplotlib.pyplot as plt
 import skimage.io
-from config import project
+from config import Project
 
 
 def get_1d_2d_hog(img):
     if len(img.shape) >= 3 and img.shape[2] == 3:
         img = color.rgb2gray(img)
     hog_image_1d, hog_image_2d = hog(img, orientations=8, pixels_per_cell=(16, 16),
-                    cells_per_block=(1, 1), visualise=True)
+                                     cells_per_block=(1, 1), visualise=True)
     return hog_image_1d, hog_image_2d
 
 
@@ -28,8 +28,13 @@ def get_hog(img):
     res = [int(x * 100) for x in hog]
     return res
 
+
+def flatten(img):
+    return list(img.flatten())
+
+
 if __name__ == '__main__':
-    img = skimage.io.imread("%s/001.bmp" % project.test_data_path)
+    img = skimage.io.imread("%s/001.bmp" % Project.test_data_path)
     hog_image_1d, hog_image_2d = get_1d_2d_hog(img)
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 4), sharex=True, sharey=True)
